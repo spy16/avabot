@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  // user metadata.
+  id         String   @id @default(cuid())
+  telegramId BigInt   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // usage & quota.
+  tokensUsed    Int     @default(0)
+  messagesSent  Int     @default(0)
+  creditsLeft   Float   @default(0)
+  creditsIssued Float   @default(0) // total lifetime issued credits.
+  systemPrompt  String?
+
+  // user profile data.
+  email        String?       @unique
+  language     String?
+  username     String?
+  firstName    String?
+  lastName     String?
+  subscription Subscription?
+
+  // user parameters
+  model     String?
+  modelTemp Float?
+
+  @@map("users")
+}
+
+model Subscription {
+  id            String   @id
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String   @unique
+  variant       String
+  isActive      Boolean?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  lmsqueezyData String?
+
+  @@index([createdAt])
+  @@map("subscriptions")
+}
