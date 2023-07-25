@@ -27,7 +27,7 @@ const models = [
 ]
 
 const configs = {
-    freeCredits: 1, // in USD.
+    freeCredits: 0.5, // in USD.
     memoryLength: 5,
     defaultModel: "gpt-3.5-turbo",
     freeModels: models.filter(m => m.free).map(m => m.name),
