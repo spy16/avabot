@@ -48,6 +48,7 @@
 		"@types/jsonwebtoken": "^9.0.2",
 		"jsonwebtoken": "^9.0.0",
 		"marked": "^5.1.0",
+		"mixpanel": "^0.17.0",
 		"openai": "^3.3.0",
 		"prisma": "^4.15.0",
 		"serverless-http": "^3.2.0",

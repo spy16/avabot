@@ -5,6 +5,7 @@ import { env } from "$env/dynamic/private";
 import { prisma } from "$lib/server/data";
 import type { RequestHandler } from "./$types";
 import { makePaymentLink, lemonHandler, type LemonSubscription } from "$lib/server/lemonsq";
+import { userEvent } from "$lib/server/tracking";
 
 const CHECKOUT_ID = env.LMSQ_CHECKOUT_ID
 
@@ -17,6 +18,10 @@ export const GET: RequestHandler = async ({ url }) => {
     if (!userId) {
         throw redirect(303, "/");
     }
+    userEvent({
+        kind: "checkout_initiated",
+        user: userId,
+    })
     throw redirect(303, makePaymentLink("spy16", CHECKOUT_ID, userId));
 };
 

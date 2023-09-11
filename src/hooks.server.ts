@@ -17,6 +17,7 @@ export const handle: Handle = async ({ resolve, event }) => {
 bot.launch().catch((reason) => {
     console.error("bot crash: ", reason)
 })
+
 process.on("SIGINT", (signal) => bot.stop(signal.toString()))
 process.on("SIGTERM", (signal) => bot.stop(signal.toString()))
 

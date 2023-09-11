@@ -13,6 +13,7 @@ import {
 } from "./canned"
 import type { AvaContext, Exchange } from "./types"
 import configs, { computeCreditBurn, modelsForUser } from "./configs"
+import { userEvent } from "../tracking"
 
 const threads: Record<string, Exchange[]> = {}
 
@@ -49,15 +50,27 @@ bot.start(async (ctx) => {
 
 bot.help(async (ctx) => {
     const user = await allocUser(ctx)
+    userEvent({
+        kind: "help_requested",
+        user: user.id,
+    })
     await say(ctx, helpDoc(user))
 })
 
 bot.command("reset", async (ctx) => {
     delete threads[ctx.user.id];
+    userEvent({
+        kind: "conversation_reset",
+        user: ctx.user.id,
+    })
     await say(ctx, "✅ Conversation memory has been cleared.")
 })
 
 bot.command("privacy", async (ctx) => {
+    userEvent({
+        kind: "privacy_reviewed",
+        user: ctx.user.id,
+    })
     await say(ctx, privacyPolicy())
 })
 
@@ -83,6 +96,12 @@ bot.action(/set model=(.*)/g, async (ctx, next) => {
         await prisma.user.update({
             where: { id: ctx.user.id },
             data: { model: model },
+        })
+
+        userEvent({
+            kind: "model_changed",
+            user: ctx.user.id,
+            model: model,
         })
 
         await ctx.editMessageText(
@@ -117,6 +136,11 @@ bot.command("stats", async (ctx) => {
         ].join("\n")
     }
 
+    userEvent({
+        kind: "stats_requested",
+        user: ctx.user.id,
+    })
+
     await say(ctx, stats)
 })
 
@@ -126,6 +150,10 @@ bot.on(message("text"), async (ctx) => {
     })
 
     if (ctx.isExhausted) {
+        userEvent({
+            kind: "recieved_exhausted",
+            user: ctx.user.id,
+        })
         await say(ctx, exhausted(ctx.user))
         return
     }
@@ -151,6 +179,13 @@ bot.on(message("text"), async (ctx) => {
         .catch((reason) => {
             console.error("updateUsage: ", reason)
         })
+
+    userEvent({
+        kind: "answer_generated",
+        user: ctx.user.id,
+        model: ctx.user.model,
+        tokens: usage?.total_tokens || 0,
+    })
 })
 
 // ======================== helpers =========================
