@@ -90,7 +90,8 @@ ${commandList.map(v => "- /" + v.command + ": " + v.description).join("\n")}`
 }
 
 export const exhausted = (user: User) => {
-    return `😐 I am sorry, you have exhausted your free trial limit. Please activate subscription to continue talking!
+    return `😐 I am sorry, you have no credits available. Due to the costs, my maker can no longer offer free credits 😔.
+Please activate subscription to talk to me!
 
 In addition to having nice chitchats, I can also:
 
@@ -101,8 +102,6 @@ In addition to having nice chitchats, I can also:
 📩 Help you write that email for a sick leave
 📜 Help you write that essay,
 and a lot more! And I am available 24x7 and I never get bored talking to you! 🤗
-
-🫠 I really hope you enjoyed talking with me, I know I did. And I would love to keep it up!
 
 ` + subscriptionMsg(user, null)
 }
