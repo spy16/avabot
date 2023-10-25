@@ -36,6 +36,8 @@ model User {
   model     String?
   modelTemp Float?
 
+  expiryWarningSentAt DateTime? 
+
   @@map("users")
 }
 

@@ -106,3 +106,11 @@ and a lot more! And I am available 24x7 and I never get bored talking to you! �
 
 ` + subscriptionMsg(user, null)
 }
+
+export const creditsExpiryWarning = (user: User) => {
+    const url = `${APP_HOST}/subscribe?user=${user.id}`
+
+    return `⚠️ Your free credits are about to expire in 24 hours.
+
+    💳 [Activate](${url}) your subscription now to continue talking with me without any limits! 🚀`
+}

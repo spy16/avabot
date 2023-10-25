@@ -9,7 +9,8 @@ import {
     userStats,
     helpDoc,
     commandList,
-    exhausted
+    exhausted,
+    creditsExpiryWarning
 } from "./canned"
 import type { AvaContext, Exchange } from "./types"
 import configs, { computeCreditBurn, modelsForUser } from "./configs"
@@ -156,7 +157,19 @@ bot.on(message("text"), async (ctx) => {
         })
         await say(ctx, exhausted(ctx.user))
         return
+    } else if (!ctx.isPremium) {
+        if (!ctx.user.expiryWarningSentAt) {
+            await say(ctx, creditsExpiryWarning(ctx.user))
+            await prisma.user.update({
+                where: { id: ctx.user.id },
+                data: { expiryWarningSentAt: new Date() },
+            })
+        } else if (ctx.user.expiryWarningSentAt.getTime() < Date.now() - 24 * 60 * 60 * 1000) {
+            await say(ctx, exhausted(ctx.user))
+            return
+        }
     }
+
 
     const { message, history, usage } = await gptRespond(
         ctx.user,
