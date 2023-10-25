@@ -45,7 +45,7 @@
 					<p class="text-xs">
 						Ava is designed to be privacy-focused. Your chats are not stored or logged anywhere in
 						our systems. AvaBot is completely <a
-							href="https://github.com/spy16/ava"
+							href="https://github.com/spy16/avabot"
 							class="link"
 							rel="external "
 							target="_blank">open-source</a
