@@ -111,5 +111,7 @@ export const creditsExpiryWarning = (user: User) => {
 
     return `⚠️ Your free credits are about to expire in 24 hours.
 
-    💳 [Activate](${url}) your subscription now to continue talking with me without any limits! 🚀`
+Please 💳 [Activate](${url}) your subscription now to continue talking with me without any limits! 🚀
+
+Please reach out to my maker if you have any questions.`
 }
