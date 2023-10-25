@@ -19,7 +19,7 @@ const models = [
     },
     {
         name: "gpt-4",
-        free: false,
+        free: true,
         cost: (usage: TokenUsage) => {
             return usage.prompt_tokens * 0.03 + usage.completion_tokens * 0.06
         },
