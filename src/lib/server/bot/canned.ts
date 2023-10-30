@@ -34,7 +34,7 @@ export const commandList = [
 
 export const subscriptionMsg = (user: User) => {
     if (user.subscriptionPlan && isFuture(user.subscriptionExpiry || 0)) {
-        return '💳 You have an active subscription. You are eligible to enjoy all features of Ava! 😎'
+        return `💳 You have an active subscription that will renew on ${user.subscriptionExpiry?.toDateString()}. You are eligible to enjoy all features of Ava! 😎`
     } else {
         const url = `${APP_HOST}/subscribe?user=${user.id}`
 
@@ -64,12 +64,17 @@ As part of our comittment to your privacy, AvaBot is completely open-source 😎
 }
 
 export const userStats = (user: User) => {
+    let diff = user.tokensUsed - configs.freeCredits
+    if (diff < 0) diff = 0
+
+    const tokens = `💰 You have $ \`${diff}\` tokens usage left.`
+
     return `Here are your stats!
 
 🧠 You are using \`${user.model || configs.defaultModel}\`
 🪪 Your user ID is \`${user.id}\`
 💬 You have sent ${user.messagesSent} messages in total.
-💰 You have $ \`${user.tokensUsed - configs.freeCredits}\` tokens usage left.
+${user.subscriptionPlan === null ? tokens : ""}
 
 `+ subscriptionMsg(user)
 }
