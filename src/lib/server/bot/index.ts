@@ -157,7 +157,7 @@ bot.on(message("text"), async (ctx) => {
         })
         await say(ctx, exhausted(ctx.user))
         return
-    } else if (!ctx.isPremium) {
+    } else if (!ctx.isPremium && !ctx.user.letUserContinue) {
         if (!ctx.user.expiryWarningSentAt) {
             await say(ctx, creditsExpiryWarning(ctx.user))
             await prisma.user.update({
@@ -169,7 +169,6 @@ bot.on(message("text"), async (ctx) => {
             return
         }
     }
-
 
     const { message, history, usage } = await gptRespond(
         ctx.user,
