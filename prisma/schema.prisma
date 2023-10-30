@@ -18,19 +18,19 @@ model User {
   updatedAt  DateTime @updatedAt
 
   // usage & quota.
-  tokensUsed    Int     @default(0)
-  messagesSent  Int     @default(0)
-  creditsLeft   Float   @default(0)
-  creditsIssued Float   @default(0) // total lifetime issued credits.
-  systemPrompt  String?
+  tokensUsed   Int     @default(0)
+  costIncurred Float   @default(0)
+  messagesSent Int     @default(0)
+  systemPrompt String?
 
   // user profile data.
-  email        String?       @unique
-  language     String?
-  username     String?
-  firstName    String?
-  lastName     String?
-  subscription Subscription?
+  email     String? @unique
+  language  String?
+  username  String?
+  firstName String?
+  lastName  String?
+
+  subscriptionPlan String?
 
   // user parameters
   model     String?
@@ -44,14 +44,14 @@ model User {
 
 model Subscription {
   id            String   @id
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String   @unique
+  userId        String
   variant       String
   isActive      Boolean?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   lmsqueezyData String?
 
+  @@index([userId])
   @@index([createdAt])
   @@map("subscriptions")
 }

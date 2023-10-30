@@ -59,7 +59,7 @@ AvaBot is designed to be privacy-friendly, and collects absolutely minimum infor
 
 By using AvaBot, you maybe subject to Telegram and OpenAI privacy policy and terms of service.
 
-In the interest of transparency, AvaBot is completely open-source. You can take a look at the code here: https://github.com/spy16/avabot
+As part of our comittment to your privacy, AvaBot is completely open-source 😎. You can take a look at the code and verify everything here: https://github.com/spy16/avabot
 `
 }
 
@@ -72,10 +72,9 @@ export const userStats = (
 🧠 You are using \`${user.model || configs.defaultModel}\`
 🪪 Your user ID is \`${user.id}\`
 💬 You have sent ${user.messagesSent} messages in total.
-💰 You have $ \`${user.creditsLeft.toPrecision(8)}\` worth of credits left.
+💰 You have $ \`${user.tokensUsed - configs.freeCredits}\` tokens usage left.
 
 `+ subscriptionMsg(user, sub)
-
 }
 
 export const helpDoc = (user: User) => {
@@ -90,7 +89,8 @@ ${commandList.map(v => "- /" + v.command + ": " + v.description).join("\n")}`
 }
 
 export const exhausted = (user: User) => {
-    return `😐 I am sorry, you have no credits available. Due to the costs, my maker can no longer offer free credits 😔.
+    return `😐 I am sorry, you have no active subscription and you have exhausted your trial quota. 
+
 Please activate subscription to talk to me!
 
 In addition to having nice chitchats, I can also:
@@ -109,9 +109,9 @@ and a lot more! And I am available 24x7 and I never get bored talking to you! �
 export const creditsExpiryWarning = (user: User) => {
     const url = `${APP_HOST}/subscribe?user=${user.id}`
 
-    return `⚠️ Your free credits are about to expire in 24 hours.
+    return `⚠️ Your free trial is about to expire in 24 hours.
 
 Please 💳 [Activate](${url}) your subscription now to continue talking with me without any limits! 🚀
 
-Please reach out to my maker if you have any questions.`
+Please reach out to my maker at shiv.ylp@gmail.com if you have any questions.`
 }

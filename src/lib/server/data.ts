@@ -15,8 +15,6 @@ export async function allocUser({ from }: Context) {
             firstName: from.first_name,
             lastName: from.last_name,
             telegramId: from.id,
-            creditsIssued: configs.freeCredits,
-            creditsLeft: configs.freeCredits,
         },
         where: { telegramId: from.id },
         update: {
@@ -49,3 +47,4 @@ export async function allocUser({ from }: Context) {
 
     return user;
 }
+

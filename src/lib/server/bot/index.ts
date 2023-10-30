@@ -13,7 +13,7 @@ import {
     creditsExpiryWarning
 } from "./canned"
 import type { AvaContext, Exchange } from "./types"
-import configs, { computeCreditBurn, modelsForUser } from "./configs"
+import configs, { computeCreditBurn as computeCostIncurred, modelsForUser } from "./configs"
 import { userEvent } from "../tracking"
 
 const threads: Record<string, Exchange[]> = {}
@@ -25,18 +25,10 @@ bot.use(async (ctx, next) => {
     const user = await allocUser(ctx)
 
     ctx.user = user
-    ctx.isPremium = false
+    ctx.isPremium = user.subscriptionPlan !== null
     ctx.isAdmin = user.id === env.ADMIN_USER_ID
     ctx.isNewUser = user.createdAt.getTime() === user.updatedAt.getTime()
-    ctx.isExhausted = user.creditsLeft <= 0
-
-    if (!ctx.isNewUser) {
-        const sub = await prisma.subscription.findUnique({
-            where: { userId: ctx.user.id },
-            select: { id: true },
-        })
-        ctx.isPremium = sub !== null
-    }
+    ctx.isExhausted = user.tokensUsed > configs.freeCredits
 
     return await next()
 })
@@ -117,7 +109,7 @@ bot.action(/set model=(.*)/g, async (ctx, next) => {
 })
 
 bot.command("stats", async (ctx) => {
-    const sub = await prisma.subscription.findUnique({
+    const sub = await prisma.subscription.findFirst({
         where: { userId: ctx.user.id },
     })
 
@@ -185,7 +177,7 @@ bot.on(message("text"), async (ctx) => {
             data: {
                 messagesSent: { increment: 1 },
                 tokensUsed: { increment: usage?.total_tokens || 0 },
-                creditsLeft: { decrement: computeCreditBurn(ctx.user.model || configs.defaultModel, usage) }
+                costIncurred: { increment: computeCostIncurred(ctx.user.model || configs.defaultModel, usage) }
             },
         })
         .catch((reason) => {

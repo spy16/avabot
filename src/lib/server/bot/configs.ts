@@ -19,7 +19,7 @@ const models = [
     },
     {
         name: "gpt-4",
-        free: true,
+        free: false,
         cost: (usage: TokenUsage) => {
             return usage.prompt_tokens * 0.03 + usage.completion_tokens * 0.06
         },
@@ -27,7 +27,7 @@ const models = [
 ]
 
 const configs = {
-    freeCredits: 0, // in USD.
+    freeCredits: 10000, // in tokens.
     memoryLength: 5,
     defaultModel: "gpt-3.5-turbo",
     freeModels: models.filter(m => m.free).map(m => m.name),

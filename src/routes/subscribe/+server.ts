@@ -60,15 +60,13 @@ export const POST: RequestHandler = async ({ request }) => {
                 case "subscription_payment_success": {
                     const sub = await prisma.subscription.findUnique({
                         where: { id: event.data.attributes.subscription_id.toString() },
-                    })
+                    });
+
                     if (sub) {
-                        const margin = 80
-                        const credits = (margin / 100) * event.data.attributes.subtotal_usd
                         await prisma.user.update({
                             where: { id: sub.userId },
                             data: {
-                                creditsLeft: credits,
-                                creditsIssued: { increment: credits },
+                                subscriptionPlan: sub.variant,
                             }
                         })
                     }
