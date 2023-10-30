@@ -1,6 +1,7 @@
 import type { Subscription, User } from "@prisma/client"
 import { dev } from "$app/environment"
 import configs from "./configs"
+import { isFuture } from "date-fns"
 
 const APP_HOST = dev ? "http://localhost:3000" : "https://avabot.fly.dev"
 
@@ -31,15 +32,14 @@ export const commandList = [
     }
 ]
 
-export const subscriptionMsg = (user: User, sub: Subscription | null) => {
-    if (sub) {
+export const subscriptionMsg = (user: User) => {
+    if (user.subscriptionPlan && isFuture(user.subscriptionExpiry || 0)) {
         return '💳 You have an active subscription. You are eligible to enjoy all features of Ava! 😎'
     } else {
         const url = `${APP_HOST}/subscribe?user=${user.id}`
 
         return `💳 [Activate](${url}) your subscription now to use AvaBot without any limits! 🚀`
     }
-
 }
 
 export const privacyPolicy = () => {
@@ -63,10 +63,7 @@ As part of our comittment to your privacy, AvaBot is completely open-source 😎
 `
 }
 
-export const userStats = (
-    user: User,
-    sub: Subscription | null,
-) => {
+export const userStats = (user: User) => {
     return `Here are your stats!
 
 🧠 You are using \`${user.model || configs.defaultModel}\`
@@ -74,7 +71,7 @@ export const userStats = (
 💬 You have sent ${user.messagesSent} messages in total.
 💰 You have $ \`${user.tokensUsed - configs.freeCredits}\` tokens usage left.
 
-`+ subscriptionMsg(user, sub)
+`+ subscriptionMsg(user)
 }
 
 export const helpDoc = (user: User) => {
@@ -103,7 +100,7 @@ In addition to having nice chitchats, I can also:
 📜 Help you write that essay,
 and a lot more! And I am available 24x7 and I never get bored talking to you! 🤗
 
-` + subscriptionMsg(user, null)
+` + subscriptionMsg(user)
 }
 
 export const creditsExpiryWarning = (user: User) => {

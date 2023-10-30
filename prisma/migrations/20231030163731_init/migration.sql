@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "subscriptions" ADD COLUMN     "renewsAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

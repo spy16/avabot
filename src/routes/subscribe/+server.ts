@@ -1,11 +1,12 @@
+import { addDays } from "date-fns";
 import { redirect } from "@sveltejs/kit";
 import type { User } from "@prisma/client";
 import { env } from "$env/dynamic/private";
 
 import { prisma } from "$lib/server/data";
 import type { RequestHandler } from "./$types";
-import { makePaymentLink, lemonHandler, type LemonSubscription } from "$lib/server/lemonsq";
 import { userEvent } from "$lib/server/tracking";
+import { makePaymentLink, lemonHandler, type LemonSubscription } from "$lib/server/lemonsq";
 
 const CHECKOUT_ID = env.LMSQ_CHECKOUT_ID
 
@@ -67,6 +68,7 @@ export const POST: RequestHandler = async ({ request }) => {
                             where: { id: sub.userId },
                             data: {
                                 subscriptionPlan: sub.variant,
+                                subscriptionExpiry: addDays(new Date(), 30),
                             }
                         })
                     }
@@ -83,6 +85,8 @@ export const POST: RequestHandler = async ({ request }) => {
 const upsertSubscription = async (sub: LemonSubscription, user: User) => {
     const lmsqueezyData = JSON.stringify(sub);
 
+    const active = sub.attributes.status === "active";
+
     await prisma.subscription.upsert({
         where: { id: sub.id },
         create: {
@@ -96,8 +100,17 @@ const upsertSubscription = async (sub: LemonSubscription, user: User) => {
             id: sub.id,
             variant: sub.attributes.product_name,
             isActive: sub.attributes.status === "active",
+            renewsAt: sub.attributes.renews_at,
             lmsqueezyData,
         },
         select: { id: true },
+    });
+
+    await prisma.user.update({
+        where: { id: user.id },
+        data: {
+            subscriptionPlan: active ? sub.attributes.product_name : null,
+            subscriptionExpiry: active ? sub.attributes.renews_at : null,
+        },
     });
 };

@@ -30,14 +30,14 @@ model User {
   firstName String?
   lastName  String?
 
-  subscriptionPlan String?
-
   // user parameters
   model     String?
   modelTemp Float?
 
   letUserContinue     Boolean?  @default(false)
   expiryWarningSentAt DateTime?
+  subscriptionPlan    String?
+  subscriptionExpiry  DateTime?
 
   @@map("users")
 }
@@ -49,6 +49,7 @@ model Subscription {
   isActive      Boolean?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  renewsAt      DateTime @default(now())
   lmsqueezyData String?
 
   @@index([userId])

@@ -1,6 +1,7 @@
 import { env } from "$env/dynamic/private"
 import { message } from "telegraf/filters"
 import { type Context, Telegraf, Markup } from "telegraf"
+import { differenceInDays, isFuture } from "date-fns"
 
 import { gptRespond } from "./openai"
 import { allocUser, prisma } from "../data"
@@ -25,7 +26,7 @@ bot.use(async (ctx, next) => {
     const user = await allocUser(ctx)
 
     ctx.user = user
-    ctx.isPremium = user.subscriptionPlan !== null
+    ctx.isPremium = user.subscriptionPlan !== null && isFuture(user.subscriptionExpiry || 0)
     ctx.isAdmin = user.id === env.ADMIN_USER_ID
     ctx.isNewUser = user.createdAt.getTime() === user.updatedAt.getTime()
     ctx.isExhausted = user.tokensUsed > configs.freeCredits
@@ -109,11 +110,7 @@ bot.action(/set model=(.*)/g, async (ctx, next) => {
 })
 
 bot.command("stats", async (ctx) => {
-    const sub = await prisma.subscription.findFirst({
-        where: { userId: ctx.user.id },
-    })
-
-    let stats = userStats(ctx.user, sub)
+    let stats = userStats(ctx.user)
 
     if (ctx.isAdmin) {
         const userCount = await prisma.user.count()
@@ -149,14 +146,14 @@ bot.on(message("text"), async (ctx) => {
         })
         await say(ctx, exhausted(ctx.user))
         return
-    } else if (!ctx.isPremium && !ctx.user.letUserContinue) {
+    } else if (!ctx.isPremium) {
         if (!ctx.user.expiryWarningSentAt) {
             await say(ctx, creditsExpiryWarning(ctx.user))
             await prisma.user.update({
                 where: { id: ctx.user.id },
                 data: { expiryWarningSentAt: new Date() },
             })
-        } else if (ctx.user.expiryWarningSentAt.getTime() < Date.now() - 24 * 60 * 60 * 1000) {
+        } else if (differenceInDays(new Date(), ctx.user.expiryWarningSentAt) >= 1) {
             await say(ctx, exhausted(ctx.user))
             return
         }

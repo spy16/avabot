@@ -46,6 +46,7 @@
 		"@slack/bolt": "^3.13.1",
 		"@sveltejs/adapter-node": "^1.2.4",
 		"@types/jsonwebtoken": "^9.0.2",
+		"date-fns": "^2.30.0",
 		"jsonwebtoken": "^9.0.0",
 		"marked": "^5.1.0",
 		"mixpanel": "^0.17.0",
