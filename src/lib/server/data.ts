@@ -1,27 +1,26 @@
 import { PrismaClient } from "@prisma/client"
 import type { Context } from "telegraf"
-import configs from "./bot/configs"
 import { setProfile, userEvent } from "./tracking"
 
 export const prisma = new PrismaClient()
 
-export async function allocUser({ from }: Context) {
-    if (!from) throw new Error("from is null")
+export async function allocUser({ from: tgUser }: Context) {
+    if (!tgUser) throw new Error("from is null")
 
     const user = await prisma.user.upsert({
         create: {
-            language: from.language_code || "en",
-            username: from.username,
-            firstName: from.first_name,
-            lastName: from.last_name,
-            telegramId: from.id,
+            language: tgUser.language_code || "en",
+            username: tgUser.username,
+            firstName: tgUser.first_name,
+            lastName: tgUser.last_name,
+            telegramId: tgUser.id,
         },
-        where: { telegramId: from.id },
+        where: { telegramId: tgUser.id },
         update: {
-            username: from.username,
-            firstName: from.first_name,
-            lastName: from.last_name,
-            language: from.language_code,
+            username: tgUser.username,
+            firstName: tgUser.first_name,
+            lastName: tgUser.last_name,
+            language: tgUser.language_code,
         },
     })
 

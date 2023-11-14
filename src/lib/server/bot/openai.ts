@@ -1,7 +1,5 @@
 import {
-    OpenAIApi,
-    Configuration,
-    type CreateChatCompletionRequest,
+    OpenAI,
 } from "openai"
 import { env } from "$env/dynamic/private"
 import type { User } from "@prisma/client"
@@ -10,9 +8,9 @@ import configs from "./configs"
 import { sysPrompt } from "./canned"
 import type { Exchange } from "./types"
 
-const openai = new OpenAIApi(new Configuration({
+const openai = new OpenAI({
     apiKey: env.OPENAI_APIKEY,
-}))
+})
 
 export async function gptRespond(user: User, text: string, history: Exchange[]) {
     const req: CreateChatCompletionRequest = {
