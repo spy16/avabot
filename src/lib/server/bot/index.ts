@@ -29,7 +29,7 @@ bot.use(async (ctx, next) => {
     ctx.isPremium = user.subscriptionPlan !== null && isFuture(user.subscriptionExpiry || 0)
     ctx.isAdmin = user.id === env.ADMIN_USER_ID
     ctx.isNewUser = user.createdAt.getTime() === user.updatedAt.getTime()
-    ctx.isExhausted = user.tokensUsed > configs.freeCredits
+    ctx.isExhausted = !ctx.isPremium && (user.tokensUsed > configs.freeCredits)
 
     return await next()
 })
