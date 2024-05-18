@@ -23,6 +23,13 @@ const models = [
         cost: (usage: TokenUsage) => {
             return usage.prompt_tokens * 0.03 + usage.completion_tokens * 0.06
         },
+    },
+    {
+        name: "gpt-4o",
+        free: false,
+        cost: (usage: TokenUsage) => {
+            return usage.prompt_tokens * 0.03 + usage.completion_tokens * 0.06
+        },
     }
 ]
 
