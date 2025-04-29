@@ -1,7 +1,7 @@
-FROM node:18-bullseye-slim as base
+FROM node:20-bullseye-slim as base
 # note: needed for prisma
 RUN apt-get update && apt-get install -y openssl git
-RUN npm install -g pnpm vite
+RUN npm install -g pnpm@8.10.5 vite
 
 # layer with all dependencies.
 FROM base as deps
